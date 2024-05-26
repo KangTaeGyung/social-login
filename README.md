@@ -1,2 +1,2 @@
 # social-login
-Social Login 예제입니다. 구글 로그인으로 구현되었습니다.
+Social Login Sample 입니다. 간단하게 구글 로그인만 구현해 봅니다.
