@@ -1,9 +1,12 @@
 package org.example.simpledms.config;
 
 import jakarta.servlet.DispatcherType;
+import lombok.RequiredArgsConstructor;
+import org.example.simpledms.security.jwt.JwtUtils;
 import org.example.simpledms.security.oauth.SocialLoginSuccess;
 import org.example.simpledms.security.oauth.SocialLoginServiceCustom;
 import org.example.simpledms.security.jwt.AuthTokenFilter;
+import org.example.simpledms.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,23 +45,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  *    6-2) 구글 인가코드 확인 후에 DB 인증, 웹토큰 발행, 프론트로 전송
  */
 @Configuration
+@RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    @Autowired
-    private SocialLoginSuccess socialLoginSuccess;
+    private final SocialLoginSuccess socialLoginSuccess;
 
-    @Autowired
-    private SocialLoginServiceCustom socialLoginServiceCustom ;
+    private final SocialLoginServiceCustom socialLoginServiceCustom ;
+
+    private final AuthTokenFilter authTokenFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-//  JWT 웹토큰 자동인증 함수
-    @Bean
-    public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter();
     }
 
 //  img, css, js 등 인증 무시 설정 함수
@@ -94,7 +92,7 @@ public class WebSecurityConfig {
         );
 
 //        5-9)
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

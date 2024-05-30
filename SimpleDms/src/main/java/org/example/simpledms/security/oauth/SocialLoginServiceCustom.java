@@ -1,5 +1,6 @@
 package org.example.simpledms.security.oauth;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.simpledms.model.entity.auth.Member;
 import org.example.simpledms.repository.auth.MemberRepository;
@@ -31,11 +32,11 @@ import java.util.Map;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class SocialLoginServiceCustom implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-    @Autowired
-    private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
-    PasswordEncoder encoder = new BCryptPasswordEncoder();
+    private PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
