@@ -1,5 +1,6 @@
 package org.example.simpledms.controller.auth;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.simpledms.model.dto.NewUser;
 import org.example.simpledms.model.dto.UserReq;
@@ -48,23 +49,16 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    MemberService memberService;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    JwtUtils jwtUtils;
-
-    @Autowired
-    AuthenticationManagerBuilder authenticationManagerBuilder;                                 // 인증관리(스프링시큐리티 제공)
+    private final MemberService memberService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;                                 // 인증관리(스프링시큐리티 제공)
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody UserReq userReq) {
-        try {
             Authentication authentication                                                       // 1)
                     = authenticationManagerBuilder.getObject().authenticate(
                     new UsernamePasswordAuthenticationToken(userReq.getEmail(), userReq.getPassword())
@@ -83,15 +77,10 @@ public class AuthController {
                     codeName
             );
             return new ResponseEntity<>(userRes, HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @PostMapping("/register")
     public ResponseEntity<Object> createUser(@RequestBody NewUser newUser) {
-        try {
             if(memberService.existsById(newUser.getEmail()) == true) {
                 return new ResponseEntity<>("이미 회원입니다.", HttpStatus.BAD_REQUEST);
             }
@@ -106,9 +95,5 @@ public class AuthController {
             memberService.save(member);
 
             return new ResponseEntity<>("회원저장 성공", HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 }
